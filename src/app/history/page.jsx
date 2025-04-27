@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import axios from "axios";
 
 export default function HistoryPage() {
   const [history, setHistory] = useState([]); // Estado para armazenar o histórico
@@ -9,10 +10,9 @@ export default function HistoryPage() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await fetch("basket-api-info.up.railway.app/history");
-        if (response.ok) {
-          const data = await response.json();
-          setHistory(data); // Atualiza o estado com os dados do histórico
+        const response = await axios.get("basket-api-info.up.railway.app/history");
+        if (response.status === 200) {
+          setHistory(response.data); // Atualiza o estado com os dados do histórico
         } else {
           console.error("Erro ao buscar o histórico");
         }
