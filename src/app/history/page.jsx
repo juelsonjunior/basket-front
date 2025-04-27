@@ -9,7 +9,7 @@ export default function HistoryPage() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await fetch("http://localhost:3001/history");
+        const response = await fetch("basket-api-info.up.railway.app/history");
         if (response.ok) {
           const data = await response.json();
           setHistory(data); // Atualiza o estado com os dados do histórico

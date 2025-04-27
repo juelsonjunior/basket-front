@@ -8,7 +8,7 @@ export function SearchProvider({ children }) {
 
   const searchPlayers = async (query) => {
     try {
-      const response = await fetch("http://localhost:3001/search", {
+      const response = await fetch("basket-api-info.up.railway.app/search", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
