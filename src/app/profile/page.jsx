@@ -1,14 +1,16 @@
 "use client";
+export const dynamic = "force-dynamic"; // Força a renderização dinâmica
+
 import { useSearchParams, useRouter } from "next/navigation";
 import { Calendar, MapPin, Star, Users } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useSearch } from "@/context/searchContext";
 
-export default function ProfilePage() {
+function ProfileContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { results } = useSearch(); // Obtém os resultados do contexto
-  const playerId = parseInt(searchParams.get("id"), 10); // Obtém o ID do jogador da URL
+  const playerId = parseInt(searchParams.get("id"), 10); // Converte o ID da URL para número inteiro
 
   // Verifica se o jogador existe no contexto
   const player = results.find((p) => p.id === playerId);
@@ -85,5 +87,13 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <ProfileContent />
+    </Suspense>
   );
 }
