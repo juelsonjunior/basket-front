@@ -10,6 +10,9 @@ export function Navbar() {
             <Link href="/">Home</Link>
           </li>
           <li>
+            <Link href="/search">Pesquisar</Link>
+          </li>
+          <li>
             <Link href="/history">Histórico</Link>
           </li>
         </ul>
