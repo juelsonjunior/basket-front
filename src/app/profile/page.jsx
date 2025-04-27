@@ -1,6 +1,28 @@
-import { Calendar, MapPin, Star } from "lucide-react";
+"use client";
+import { useSearchParams, useRouter } from "next/navigation";
+import { Calendar, MapPin, Star, Users } from "lucide-react";
+import { useEffect } from "react";
+import { useSearch } from "@/context/searchContext";
 
 export default function ProfilePage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { results } = useSearch(); // Obtém os resultados do contexto
+  const playerId = parseInt(searchParams.get("id"), 10); // Obtém o ID do jogador da URL
+
+  // Verifica se o jogador existe no contexto
+  const player = results.find((p) => p.id === playerId);
+
+  useEffect(() => {
+    if (!player) {
+      router.push("/search"); // Redireciona para a página de pesquisa se o jogador não for encontrado
+    }
+  }, [player, router]);
+
+  if (!player) {
+    return null; // Evita renderizar enquanto redireciona
+  }
+
   return (
     <div
       className="flex flex-col items-center"
@@ -16,24 +38,27 @@ export default function ProfilePage() {
             </div>
             {/* Informações do Usuário */}
             <div className="text-center md:text-left">
-              <h2 className="text-2xl font-bold text-center">LeBron James</h2>
-              <p className="text-gray-600 mb-4 text-center">
-                Jogador profissional de basquete, considerado um dos maiores de
-                todos os tempos.
+              <h2 className="text-2xl font-bold text-center">{player.nome}</h2>
+              <p className="text-gray-600 mb-4 text-center flex items-center gap-2 justify-center">
+                <Users className="w-4 h-4 text-gray-500" />
+                {player.equipe}
               </p>
+
+              <div className="border w-full mt-5 mb-5"></div>
+
               {/* Lista de Informações Adicionais */}
               <ul className="space-y-2 flex flex-col items-center md:block md:flex-row md:items-start">
                 <li className="text-gray-700 flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-gray-500" />
-                  <span>Idade: 38 anos</span>
+                  <span>Idade: {player.idade} anos</span>
                 </li>
                 <li className="text-gray-700 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-gray-500" />
-                  <span>Localização: Los Angeles, EUA</span>
+                  <span>Localização: {player.localizacao}</span>
                 </li>
                 <li className="text-gray-700 flex items-center gap-2">
                   <Star className="w-4 h-4 text-gray-500" />
-                  <span>Hobbies: Basquete, cinema, filantropia</span>
+                  <span>Hobbies: {player.hobbies.join(", ")}</span>
                 </li>
               </ul>
             </div>
@@ -45,27 +70,17 @@ export default function ProfilePage() {
           {/* Seção História */}
           <div className="bg-white text-gray-900 rounded-lg shadow p-6 flex-grow">
             <h3 className="text-xl font-semibold mb-2">História</h3>
-            <p className="text-gray-700">
-              LeBron James nasceu em Akron, Ohio, e começou a jogar basquete
-              desde cedo. Ele foi destaque no ensino médio e entrou na NBA em
-              2003, sendo selecionado pelo Cleveland Cavaliers. Ao longo de sua
-              carreira, jogou pelos Miami Heat, Cleveland Cavaliers e Los
-              Angeles Lakers, conquistando diversos títulos e prêmios.
-            </p>
+            <p className="text-gray-700">{player.historia}</p>
           </div>
 
           {/* Seção Conquistas */}
           <div className="bg-white text-gray-900 rounded-lg shadow p-6 flex-grow">
             <h3 className="text-xl font-semibold mb-2">Conquistas</h3>
-            <p className="text-gray-700">
-              - 4 vezes campeão da NBA
-              <br />
-              - 4 vezes MVP da temporada regular
-              <br />
-              - 2 medalhas de ouro olímpicas
-              <br />- Mais de 38.000 pontos na carreira, sendo um dos maiores
-              pontuadores da história da NBA
-            </p>
+            {player.conquistas.map((conquista, index) => (
+              <p className="text-gray-700" key={index}>
+                {conquista}
+              </p>
+            ))}
           </div>
         </div>
       </div>
