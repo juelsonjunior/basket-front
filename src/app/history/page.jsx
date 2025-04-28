@@ -10,7 +10,7 @@ export default function HistoryPage() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await axios.get("basket-api-info.up.railway.app/history");
+        const response = await axios.get("https://basket-api-info.up.railway.app/history");
         if (response.status === 200) {
           setHistory(response.data); // Atualiza o estado com os dados do histórico
         } else {
