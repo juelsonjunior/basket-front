@@ -23,7 +23,7 @@ export default function HistoryPage() {
   const fetchHistory = useCallback(async () => {
     setLoading(true); // Inicia o carregamento
     try {
-      const response = await axios.get("http://localhost:3001/history");
+      const response = await axios.get("https://basket-front.vercel.app/history");
       if (response.status === 200) {
         setHistory(response.data); // Atualiza o estado com os dados do histórico
       } else {
