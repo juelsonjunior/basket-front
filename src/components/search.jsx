@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useSearch } from "@/context/searchContext";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -8,9 +8,13 @@ export function Search() {
   const [searchData, setSearchData] = useState("");
   const { searchPlayers } = useSearch();
 
-  const handleSearch = async () => {
-    await searchPlayers(searchData); // Realiza a pesquisa usando o contexto // Redireciona para a página de resultados
-  };
+  // Função de pesquisa otimizada com useCallback para evitar recriações desnecessárias
+  const handleSearch = useCallback(async () => {
+    if (searchData.trim() === "") {
+      return; // Evita pesquisas vazias
+    }
+    await searchPlayers(searchData); // Realiza a pesquisa usando o contexto
+  }, [searchData, searchPlayers]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-6 w-full">
@@ -26,6 +30,7 @@ export function Search() {
           className="cursor-pointer px-6 py-3"
           type="button"
           onClick={handleSearch}
+          disabled={!searchData.trim()} // Desabilita o botão se o campo estiver vazio
         >
           Pesquisar
         </Button>

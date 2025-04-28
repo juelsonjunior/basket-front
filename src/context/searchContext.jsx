@@ -1,32 +1,54 @@
 "use client";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useMemo } from "react";
 import axios from "axios";
+import { toast } from "sonner";
 
 const SearchContext = createContext();
 
 export function SearchProvider({ children }) {
   const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false); // Estado para indicar carregamento
 
   const searchPlayers = async (query) => {
+    setLoading(true); // Inicia o carregamento
     try {
-      const response = await axios.post("https://basket-api-info.up.railway.app/search", {
+      const response = await axios.post("http://localhost:3001/search", {
         q: query,
       });
 
       if (response.status === 200) {
-        setResults(response.data); // Atualiza os resultados no contexto
+        if (response.data.length === 0) {
+          // Caso nenhum jogador seja encontrado
+          setResults([]); // Atualiza os resultados para um array vazio
+          toast("Nenhum jogador encontrado."); // Exibe mensagem de aviso
+        } else {
+          setResults(response.data); // Atualiza os resultados no contexto
+          toast.success("Jogadores encontrados com sucesso!"); // Exibe mensagem de sucesso
+        }
       } else {
-        console.error("Erro ao buscar jogadores");
+        setResults([]); // Garante que os resultados sejam limpos em caso de erro
+        toast.error("Erro ao buscar jogadores."); // Exibe mensagem de erro
       }
     } catch (error) {
-      console.error("Erro na requisição:", error);
+      setResults([]); // Garante que os resultados sejam limpos em caso de erro
+      toast.error("Erro na requisição: " + error.message); // Exibe mensagem de erro
+    } finally {
+      setLoading(false); // Finaliza o carregamento
     }
   };
 
+  // Memoriza os valores do contexto para evitar re-renderizações desnecessárias
+  const value = useMemo(
+    () => ({
+      results,
+      searchPlayers,
+      loading,
+    }),
+    [results, loading]
+  );
+
   return (
-    <SearchContext.Provider value={{ results, searchPlayers }}>
-      {children}
-    </SearchContext.Provider>
+    <SearchContext.Provider value={value}>{children}</SearchContext.Provider>
   );
 }
 

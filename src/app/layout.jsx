@@ -1,6 +1,7 @@
 import { Main } from "@/components/template/main";
 import "./globals.css";
 import { SearchProvider } from "@/context/searchContext";
+import { Toaster } from "sonner";
 
 export const metadata = {
   title: "Basketball Stats",
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
       <body>
         <SearchProvider>
           <Main>{children}</Main>
+          <Toaster richColors position="top-center"/>
         </SearchProvider>
       </body>
     </html>

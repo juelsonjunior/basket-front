@@ -1,28 +1,34 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
 
 export default function HistoryPage() {
   const [history, setHistory] = useState([]); // Estado para armazenar o histórico
+  const [loading, setLoading] = useState(true); // Estado para indicar carregamento
 
-  useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const response = await axios.get("https://basket-api-info.up.railway.app/history");
-        if (response.status === 200) {
-          setHistory(response.data); // Atualiza o estado com os dados do histórico
-        } else {
-          console.error("Erro ao buscar o histórico");
-        }
-      } catch (error) {
-        console.error("Erro na requisição:", error);
+  // Função para buscar o histórico, otimizada com useCallback
+  const fetchHistory = useCallback(async () => {
+    setLoading(true); // Inicia o carregamento
+    try {
+      const response = await axios.get("http://localhost:3001/history");
+      if (response.status === 200) {
+        setHistory(response.data); // Atualiza o estado com os dados do histórico
+      } else {
+        console.error("Erro ao buscar o histórico");
       }
-    };
-
-    fetchHistory();
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+    } finally {
+      setLoading(false); // Finaliza o carregamento
+    }
   }, []);
+
+  // useEffect para buscar o histórico ao carregar o componente
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-5 w-full">
@@ -30,7 +36,9 @@ export default function HistoryPage() {
         Histórico de Pesquisa
       </h1>
       <div className="flex flex-col gap-5 w-full">
-        {history.length > 0 ? (
+        {loading ? (
+          <div className="text-center text-white">Carregando histórico...</div>
+        ) : history.length > 0 ? (
           history.map((player, index) => (
             <div
               key={index}
@@ -45,7 +53,7 @@ export default function HistoryPage() {
               </div>
               <Link href={`/profile?id=${player.id}`}>
                 <Button className="cursor-pointer px-6 py-3" type="button">
-                  Perfil {player.id}
+                  Perfil
                 </Button>
               </Link>
             </div>
