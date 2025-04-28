@@ -25,13 +25,24 @@ export function SearchProvider({ children }) {
           setResults(response.data); // Atualiza os resultados no contexto
           toast.success("Jogadores encontrados com sucesso!"); // Exibe mensagem de sucesso
         }
-      } else {
-        setResults([]); // Garante que os resultados sejam limpos em caso de erro
-        toast.error("Erro ao buscar jogadores."); // Exibe mensagem de erro
       }
     } catch (error) {
       setResults([]); // Garante que os resultados sejam limpos em caso de erro
-      toast.error("Erro na requisição: " + error.message); // Exibe mensagem de erro
+      if (error.response) {
+        if (error.response.status === 404) {
+          // Trata o erro 404 como "Nenhum jogador encontrado"
+          toast("Nenhum jogador encontrado.");
+        } else if (error.response.data && error.response.data.error) {
+          // Exibe a mensagem de erro retornada pela API
+          toast.error(error.response.data.error);
+        } else {
+          // Exibe uma mensagem genérica de erro
+          toast.error("Erro ao buscar jogadores.");
+        }
+      } else {
+        // Exibe uma mensagem genérica de erro para outros casos
+        toast.error("Erro na requisição: " + error.message);
+      }
     } finally {
       setLoading(false); // Finaliza o carregamento
     }

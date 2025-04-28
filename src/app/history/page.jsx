@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
+import { toast } from "sonner";
 
 export default function HistoryPage() {
   const [history, setHistory] = useState([]); // Estado para armazenar o histórico
@@ -16,10 +17,16 @@ export default function HistoryPage() {
       if (response.status === 200) {
         setHistory(response.data); // Atualiza o estado com os dados do histórico
       } else {
-        console.error("Erro ao buscar o histórico");
+        toast.error("Erro ao buscar o histórico."); // Exibe mensagem de erro genérica
       }
     } catch (error) {
-      console.error("Erro na requisição:", error);
+      if (error.response && error.response.data && error.response.data.error) {
+        // Exibe a mensagem de erro retornada pela API
+        toast.error(error.response.data.error);
+      } else {
+        // Exibe uma mensagem genérica de erro
+        toast.error("Erro na requisição: " + error.message);
+      }
     } finally {
       setLoading(false); // Finaliza o carregamento
     }

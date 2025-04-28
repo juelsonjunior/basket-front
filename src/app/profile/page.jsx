@@ -3,17 +3,17 @@ export const dynamic = "force-dynamic"; // Força a renderização dinâmica
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { Calendar, MapPin, Star, Users } from "lucide-react";
-import { useEffect, Suspense } from "react";
+import { useEffect, useMemo } from "react";
 import { useSearch } from "@/context/searchContext";
 
 function ProfileContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { results } = useSearch(); // Obtém os resultados do contexto
-  const playerId = parseInt(searchParams.get("id"), 10); // Converte o ID da URL para número inteiro
+  const playerId = useMemo(() => parseInt(searchParams.get("id"), 10), [searchParams]); // Converte o ID da URL para número inteiro
 
   // Verifica se o jogador existe no contexto
-  const player = results.find((p) => p.id === playerId);
+  const player = useMemo(() => results.find((p) => p.id === playerId), [results, playerId]);
 
   useEffect(() => {
     if (!player) {
@@ -22,7 +22,7 @@ function ProfileContent() {
   }, [player, router]);
 
   if (!player) {
-    return null; // Evita renderizar enquanto redireciona
+    return <div className="flex items-center justify-center">Carregando...</div>; // Exibe um fallback enquanto redireciona
   }
 
   return (
@@ -36,7 +36,7 @@ function ProfileContent() {
           <div className="flex flex-col items-center md:items-start">
             {/* Foto de Perfil */}
             <div className="w-full flex items-center justify-center">
-              <div className="w-24 h-24 rounded-full bg-gray-300 mb-4 "></div>
+              <div className="w-24 h-24 rounded-full bg-gray-300 mb-4"></div>
             </div>
             {/* Informações do Usuário */}
             <div className="text-center md:text-left">
@@ -91,9 +91,5 @@ function ProfileContent() {
 }
 
 export default function ProfilePage() {
-  return (
-    <Suspense fallback={<div>Carregando...</div>}>
-      <ProfileContent />
-    </Suspense>
-  );
+  return <ProfileContent />;
 }
