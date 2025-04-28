@@ -12,7 +12,7 @@ export function SearchProvider({ children }) {
   const searchPlayers = async (query) => {
     setLoading(true); // Inicia o carregamento
     try {
-      const response = await axios.post("https://basket-front.vercel.app/search", {
+      const response = await axios.post("https://basket-api-info.up.railway.app/search", {
         q: query,
       });
 
