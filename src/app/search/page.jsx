@@ -1,4 +1,5 @@
 "use client";
+import { DataPlayers } from "@/components/dataPlayers";
 import { Search } from "@/components/search";
 import { Button } from "@/components/ui/button";
 import { useSearch } from "@/context/searchContext";
@@ -29,23 +30,7 @@ export default function SearchPage() {
           <div className="text-center text-white">Carregando...</div>
         ) : results.length > 0 ? (
           results.map((player, index) => (
-            <div
-              key={index}
-              className="p-2 bg-white rounded-lg shadow-lg flex justify-between items-center gap-6 w-full"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-black"></div>
-                <div>
-                  <p className="text-xs">Nome: {player.nome}</p>
-                  <p className="text-xs">Equipa: {player.equipe}</p>
-                </div>
-              </div>
-              <Link href={`/profile?id=${player.id}`}>
-                <Button className="cursor-pointer px-6 py-3" type="button">
-                  Perfil
-                </Button>
-              </Link>
-            </div>
+            <DataPlayers key={index} player={player} />
           ))
         ) : null}
       </div>

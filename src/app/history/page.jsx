@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
 import { toast } from "sonner";
+import { DataPlayers } from "@/components/dataPlayers";
 
 export default function HistoryPage() {
   const [history, setHistory] = useState([]); // Estado para armazenar o histórico
@@ -47,23 +48,7 @@ export default function HistoryPage() {
           <div className="text-center text-white">Carregando histórico...</div>
         ) : history.length > 0 ? (
           history.map((player, index) => (
-            <div
-              key={index}
-              className="p-2 bg-white rounded-lg shadow-lg flex justify-between items-center gap-6"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-full bg-black"></div>
-                <div>
-                  <p className="text-xs">Nome: {player.nome}</p>
-                  <p className="text-xs">Equipa: {player.equipe}</p>
-                </div>
-              </div>
-              <Link href={`/profile?id=${player.id}`}>
-                <Button className="cursor-pointer px-6 py-3" type="button">
-                  Perfil
-                </Button>
-              </Link>
-            </div>
+            <DataPlayers key={index} player={player} />
           ))
         ) : (
           <p className="text-white text-center">Nenhum histórico encontrado.</p>
