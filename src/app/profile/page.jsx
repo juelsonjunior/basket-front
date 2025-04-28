@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic"; // Força a renderização dinâmica
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { Calendar, MapPin, Star, Users } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, Suspense } from "react";
 import { useSearch } from "@/context/searchContext";
 
 function ProfileContent() {
@@ -22,7 +22,7 @@ function ProfileContent() {
   }, [player, router]);
 
   if (!player) {
-    return <div className="flex items-center justify-center">Carregando...</div>; // Exibe um fallback enquanto redireciona
+    return <div>Carregando...</div>; // Exibe um fallback enquanto redireciona
   }
 
   return (
@@ -91,5 +91,9 @@ function ProfileContent() {
 }
 
 export default function ProfilePage() {
-  return <ProfileContent />;
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center">Carregando...</div>}>
+      <ProfileContent />
+    </Suspense>
+  );
 }
