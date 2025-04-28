@@ -1,4 +1,13 @@
 "use client";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { toast } from "sonner";
@@ -7,6 +16,8 @@ import { DataPlayers } from "@/components/dataPlayers";
 export default function HistoryPage() {
   const [history, setHistory] = useState([]); // Estado para armazenar o histórico
   const [loading, setLoading] = useState(true); // Estado para indicar carregamento
+  const [currentPage, setCurrentPage] = useState(1); // Página atual
+  const itemsPerPage = 5; // Número de registros por página
 
   // Função para buscar o histórico, otimizada com useCallback
   const fetchHistory = useCallback(async () => {
@@ -36,6 +47,15 @@ export default function HistoryPage() {
     fetchHistory();
   }, [fetchHistory]);
 
+  // Calcula os dados da página atual
+  const currentData = history.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Calcula o número total de páginas
+  const totalPages = Math.ceil(history.length / itemsPerPage);
+
   return (
     <div className="flex flex-col items-center justify-center gap-5 w-full">
       <h1 className="text-2xl font-bold text-center text-white">
@@ -44,14 +64,46 @@ export default function HistoryPage() {
       <div className="flex flex-col gap-5 w-full">
         {loading ? (
           <div className="text-center text-white">Carregando histórico...</div>
-        ) : history.length > 0 ? (
-          history.map((player, index) => (
+        ) : currentData.length > 0 ? (
+          currentData.map((player, index) => (
             <DataPlayers key={index} player={player} />
           ))
         ) : (
           <p className="text-white text-center">Nenhum histórico encontrado.</p>
         )}
       </div>
+      {/* Paginação */}
+      {history.length > itemsPerPage && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <PaginationItem key={index}>
+                <PaginationLink
+                  href="#"
+                  isActive={currentPage === index + 1}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                href="#"
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 }
