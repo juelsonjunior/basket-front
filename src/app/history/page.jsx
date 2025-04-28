@@ -1,7 +1,5 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import axios from "axios";
 import { toast } from "sonner";
 import { DataPlayers } from "@/components/dataPlayers";

@@ -1,9 +1,7 @@
 "use client";
 import { DataPlayers } from "@/components/dataPlayers";
 import { Search } from "@/components/search";
-import { Button } from "@/components/ui/button";
 import { useSearch } from "@/context/searchContext";
-import Link from "next/link";
 
 export default function SearchPage() {
   const { results, loading } = useSearch(); // Obtém os resultados e o estado de carregamento do contexto
