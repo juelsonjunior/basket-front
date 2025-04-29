@@ -6,13 +6,13 @@ import { toast } from "sonner";
 const SearchContext = createContext();
 
 export function SearchProvider({ children }) {
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false); // Estado para indicar carregamento
+  const [results, setResults] = useState([]); // Armazena os resultados da pesquisa
+  const [loading, setLoading] = useState(false); // Indica o estado de carregamento
 
   const searchPlayers = async (query) => {
     setLoading(true); // Inicia o carregamento
     try {
-      const response = await axios.post("https://basket-api-info.up.railway.app/search", {
+      const response = await axios.post("http://localhost:3001/search", {
         q: query,
       });
 
