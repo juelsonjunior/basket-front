@@ -2,13 +2,28 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
+import { useState } from "react";
 
-export function DataPlayers({ player }) {
+export function DataPlayers({ player, userId, history }) {
+  // Determina o ID do usuário, priorizando o `userId` passado como prop
+  const resolvedUserId = userId || player._id;
+
+  // Verifica se o jogador já está no histórico
+  const isAlreadyInHistory = history?.some(
+    (item) => item.userId === resolvedUserId && item.nome === player.nome
+  );
+
   const handleSaveHistory = async () => {
+    if (isAlreadyInHistory) {
+      console.log("Jogador já está no histórico. Nenhuma ação necessária.");
+      return;
+    }
+
     try {
       // Envia o jogador para a rota /save-history
       await axios.post("http://localhost:3001/save-history", {
         players: [player],
+        userId: resolvedUserId, // Usa o ID resolvido
       });
     } catch (error) {
       console.error("Erro ao salvar no histórico:", error);
@@ -28,7 +43,7 @@ export function DataPlayers({ player }) {
           <p className="text-xs">Equipa: {player.equipe}</p>
         </div>
       </div>
-      <Link href={`/profile?id=${player._id}`} onClick={handleProfileClick}>
+      <Link href={`/profile?id=${resolvedUserId}`} onClick={() => handleProfileClick()}>
         <Button className="cursor-pointer px-6 py-3" type="button">
           Perfil
         </Button>
