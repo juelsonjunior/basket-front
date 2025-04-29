@@ -20,15 +20,6 @@ function ProfileContent() {
   useEffect(() => {
     if (!player) {
       router.push("/search"); // Redireciona para a página de pesquisa se o jogador não for encontrado
-    } else {
-      // Salva o jogador no histórico ao acessar o perfil
-      axios
-        .post("http://localhost:3001/save-history", {
-          players: [player],
-        })
-        .catch((error) => {
-          console.error("Erro ao salvar no histórico:", error);
-        });
     }
   }, [player, router]);
 
