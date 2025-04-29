@@ -22,9 +22,7 @@ export default function HistoryPage() {
   const fetchHistory = useCallback(async () => {
     setLoading(true); // Inicia o carregamento
     try {
-      const response = await axios.get(
-        "http://localhost:3001/history"
-      );
+      const response = await axios.get("http://localhost:3001/history");
       if (response.status === 200) {
         setHistory(response.data); // Atualiza o estado com os dados do histórico
       } else {
@@ -71,7 +69,7 @@ export default function HistoryPage() {
           <div className="text-center text-white">Carregando histórico...</div>
         ) : currentData.length > 0 ? (
           currentData.map((player, index) => (
-            <DataPlayers key={index} player={player} />
+            <DataPlayers key={index} player={player} userId={player.userId} />
           ))
         ) : (
           <p className="text-white text-center">Nenhum histórico encontrado.</p>
