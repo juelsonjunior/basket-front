@@ -2,13 +2,12 @@
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { DataPlayers } from "@/components/dataPlayers";
@@ -23,7 +22,9 @@ export default function HistoryPage() {
   const fetchHistory = useCallback(async () => {
     setLoading(true); // Inicia o carregamento
     try {
-      const response = await axios.get("https://basket-api-info.up.railway.app/history");
+      const response = await axios.get(
+        "http://localhost:3001/history"
+      );
       if (response.status === 200) {
         setHistory(response.data); // Atualiza o estado com os dados do histórico
       } else {
@@ -48,13 +49,17 @@ export default function HistoryPage() {
   }, [fetchHistory]);
 
   // Calcula os dados da página atual
-  const currentData = history.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const currentData = useMemo(() => {
+    return history.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+  }, [history, currentPage, itemsPerPage]);
 
   // Calcula o número total de páginas
-  const totalPages = Math.ceil(history.length / itemsPerPage);
+  const totalPages = useMemo(() => {
+    return Math.ceil(history.length / itemsPerPage);
+  }, [history, itemsPerPage]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-5 w-full">

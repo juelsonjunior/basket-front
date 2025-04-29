@@ -1,23 +1,34 @@
 "use client";
-export const dynamic = "force-dynamic"; // Força a renderização dinâmica
-
 import { useSearchParams, useRouter } from "next/navigation";
 import { Calendar, MapPin, Star, Users } from "lucide-react";
 import { useEffect, useMemo, Suspense } from "react";
+import axios from "axios";
 import { useSearch } from "@/context/searchContext";
 
 function ProfileContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { results } = useSearch(); // Obtém os resultados do contexto
-  const playerId = useMemo(() => parseInt(searchParams.get("id"), 10), [searchParams]); // Converte o ID da URL para número inteiro
+  const playerId = useMemo(() => searchParams.get("id"), [searchParams]); // Obtém o ID como string
 
   // Verifica se o jogador existe no contexto
-  const player = useMemo(() => results.find((p) => p.id === playerId), [results, playerId]);
+  const player = useMemo(
+    () => results.find((p) => p._id === playerId),
+    [results, playerId]
+  );
 
   useEffect(() => {
     if (!player) {
       router.push("/search"); // Redireciona para a página de pesquisa se o jogador não for encontrado
+    } else {
+      // Salva o jogador no histórico ao acessar o perfil
+      axios
+        .post("http://localhost:3001/save-history", {
+          players: [player],
+        })
+        .catch((error) => {
+          console.error("Erro ao salvar no histórico:", error);
+        });
     }
   }, [player, router]);
 
@@ -92,7 +103,11 @@ function ProfileContent() {
 
 export default function ProfilePage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center">Carregando...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center">Carregando...</div>
+      }
+    >
       <ProfileContent />
     </Suspense>
   );

@@ -10,7 +10,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 export default function SearchPage() {
   const { results, loading } = useSearch(); // Obtém os resultados e o estado de carregamento do contexto
@@ -18,13 +18,17 @@ export default function SearchPage() {
   const itemsPerPage = 5; // Número de registros por página
 
   // Calcula os dados da página atual
-  const currentData = results.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const currentData = useMemo(() => {
+    return results.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+    );
+  }, [results, currentPage, itemsPerPage]);
 
   // Calcula o número total de páginas
-  const totalPages = Math.ceil(results.length / itemsPerPage);
+  const totalPages = useMemo(() => {
+    return Math.ceil(results.length / itemsPerPage);
+  }, [results, itemsPerPage]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
@@ -35,11 +39,7 @@ export default function SearchPage() {
 
       {/* Título dinâmico */}
       <h1 className="text-2xl font-bold text-center text-white">
-        {loading
-          ? "Carregando resultados..."
-          : results.length > 0
-          ? "Resultados encontrados:"
-          : "Nenhum jogador encontrado"}
+        Resultados encontrados
       </h1>
 
       {/* Lista de resultados */}

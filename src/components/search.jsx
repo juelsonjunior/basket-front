@@ -10,11 +10,22 @@ export function Search() {
 
   // Função de pesquisa otimizada com useCallback para evitar recriações desnecessárias
   const handleSearch = useCallback(async () => {
-    if (searchData.trim() === "") {
+    const trimmedQuery = searchData.trim();
+    if (!trimmedQuery) {
       return; // Evita pesquisas vazias
     }
-    await searchPlayers(searchData); // Realiza a pesquisa usando o contexto
+    await searchPlayers(trimmedQuery); // Realiza a pesquisa usando o contexto
   }, [searchData, searchPlayers]);
+
+  // Função para lidar com a tecla Enter
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        handleSearch();
+      }
+    },
+    [handleSearch]
+  );
 
   return (
     <div className="flex flex-col items-center justify-center gap-6 w-full">
@@ -24,6 +35,7 @@ export function Search() {
           placeholder="Pesquisar jogador"
           value={searchData}
           onChange={(e) => setSearchData(e.target.value)}
+          onKeyDown={handleKeyDown} // Permite pesquisa ao pressionar Enter
           className="flex-1 p-2 border-2 rounded-md"
         />
         <Button
