@@ -265,51 +265,68 @@ export function PlayersTable() {
     </div>
   );
 
-  const HobbiesList = ({ hobbies, onEdit, onRemove, editingHobbie, onSave, onCancel }) => (
-    <div className="mt-2 space-y-2 max-h-[200px] overflow-y-auto">
-      {hobbies.map((hobbie, index) => (
-        <div key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded">
-          {editingHobbie.index === index ? (
-            <div className="flex-1 flex gap-2">
-              <Input
-                value={editingHobbie.value}
-                onChange={(e) => setEditingHobbie(prev => ({ ...prev, value: e.target.value }))}
-                className="flex-1"
-              />
-              <Button type="button" size="sm" onClick={onSave}>
-                Salvar
-              </Button>
-              <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
-                Cancelar
-              </Button>
-            </div>
-          ) : (
-            <>
-              <span className="flex-1">{hobbie}</span>
-              <div className="space-x-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEdit(index)}
-                >
-                  Editar
+  const HobbiesList = ({ hobbies, onEdit, onRemove, editingHobbie, onSave, onCancel }) => {
+    const [localValue, setLocalValue] = useState(editingHobbie.value);
+
+    useEffect(() => {
+      setLocalValue(editingHobbie.value);
+    }, [editingHobbie.value]);
+
+    const handleLocalChange = (e) => {
+      setLocalValue(e.target.value);
+    };
+
+    const handleLocalSave = () => {
+      setEditingHobbie(prev => ({ ...prev, value: localValue }));
+      onSave();
+    };
+
+    return (
+      <div className="mt-2 space-y-2 max-h-[200px] overflow-y-auto">
+        {hobbies.map((hobbie, index) => (
+          <div key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded">
+            {editingHobbie.index === index ? (
+              <div className="flex-1 flex gap-2">
+                <Input
+                  value={localValue}
+                  onChange={handleLocalChange}
+                  className="flex-1"
+                />
+                <Button type="button" size="sm" onClick={handleLocalSave}>
+                  Salvar
                 </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onRemove(index)}
-                >
-                  Remover
+                <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
+                  Cancelar
                 </Button>
               </div>
-            </>
-          )}
-        </div>
-      ))}
-    </div>
-  );
+            ) : (
+              <>
+                <span className="flex-1">{hobbie}</span>
+                <div className="space-x-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEdit(index)}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onRemove(index)}
+                  >
+                    Remover
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="container mx-auto py-10">
