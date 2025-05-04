@@ -219,51 +219,68 @@ export function PlayersTable() {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const ConquistasList = ({ conquistas, onEdit, onRemove, editingConquista, onSave, onCancel }) => (
-    <div className="mt-2 space-y-2 max-h-[200px] overflow-y-auto">
-      {conquistas.map((conquista, index) => (
-        <div key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded">
-          {editingConquista.index === index ? (
-            <div className="flex-1 flex gap-2">
-              <Input
-                value={editingConquista.value}
-                onChange={(e) => setEditingConquista(prev => ({ ...prev, value: e.target.value }))}
-                className="flex-1"
-              />
-              <Button type="button" size="sm" onClick={onSave}>
-                Salvar
-              </Button>
-              <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
-                Cancelar
-              </Button>
-            </div>
-          ) : (
-            <>
-              <span className="flex-1">{conquista}</span>
-              <div className="space-x-2">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEdit(index)}
-                >
-                  Editar
+  const ConquistasList = ({ conquistas, onEdit, onRemove, editingConquista, onSave, onCancel }) => {
+    const [localValue, setLocalValue] = useState(editingConquista.value);
+
+    useEffect(() => {
+      setLocalValue(editingConquista.value);
+    }, [editingConquista.value]);
+
+    const handleLocalChange = (e) => {
+      setLocalValue(e.target.value);
+    };
+
+    const handleLocalSave = () => {
+      setEditingConquista(prev => ({ ...prev, value: localValue }));
+      onSave();
+    };
+
+    return (
+      <div className="mt-2 space-y-2 max-h-[200px] overflow-y-auto">
+        {conquistas.map((conquista, index) => (
+          <div key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded">
+            {editingConquista.index === index ? (
+              <div className="flex-1 flex gap-2">
+                <Input
+                  value={localValue}
+                  onChange={handleLocalChange}
+                  className="flex-1"
+                />
+                <Button type="button" size="sm" onClick={handleLocalSave}>
+                  Salvar
                 </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onRemove(index)}
-                >
-                  Remover
+                <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
+                  Cancelar
                 </Button>
               </div>
-            </>
-          )}
-        </div>
-      ))}
-    </div>
-  );
+            ) : (
+              <>
+                <span className="flex-1">{conquista}</span>
+                <div className="space-x-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEdit(index)}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onRemove(index)}
+                  >
+                    Remover
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   const HobbiesList = ({ hobbies, onEdit, onRemove, editingHobbie, onSave, onCancel }) => {
     const [localValue, setLocalValue] = useState(editingHobbie.value);
@@ -328,11 +345,30 @@ export function PlayersTable() {
     );
   };
 
+  const resetFormData = () => {
+    setFormData({
+      nome: "",
+      idade: "",
+      localizacao: "",
+      equipe: "",
+      hobbies: [],
+      historia: "",
+      conquistas: [],
+    });
+    setNovaConquista("");
+    setNovoHobbie("");
+    setEditingConquista({ index: -1, value: "" });
+    setEditingHobbie({ index: -1, value: "" });
+  };
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Lista de Jogadores</h1>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
+          setIsAddDialogOpen(open);
+          if (!open) resetFormData();
+        }}>
           <DialogTrigger asChild>
             <Button>Adicionar Jogador</Button>
           </DialogTrigger>
