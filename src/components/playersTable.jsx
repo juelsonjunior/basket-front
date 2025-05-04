@@ -367,10 +367,12 @@ export function PlayersTable() {
         <h1 className="text-2xl font-bold">Lista de Jogadores</h1>
         <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
           setIsAddDialogOpen(open);
-          if (!open) resetFormData();
+          if (open) {
+            resetFormData();
+          }
         }}>
           <DialogTrigger asChild>
-            <Button>Adicionar Jogador</Button>
+            <Button onClick={() => resetFormData()}>Adicionar Jogador</Button>
           </DialogTrigger>
           <DialogContent className="bg-white max-h-[90vh] overflow-y-auto">
             <DialogHeader>
