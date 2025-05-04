@@ -45,6 +45,8 @@ export function PlayersTable() {
   });
   const [novaConquista, setNovaConquista] = useState("");
   const [editingConquista, setEditingConquista] = useState({ index: -1, value: "" });
+  const [novoHobbie, setNovoHobbie] = useState("");
+  const [editingHobbie, setEditingHobbie] = useState({ index: -1, value: "" });
 
   useEffect(() => {
     fetchPlayers();
@@ -109,6 +111,43 @@ export function PlayersTable() {
 
   const handleCancelEdit = () => {
     setEditingConquista({ index: -1, value: "" });
+  };
+
+  const handleAddHobbie = () => {
+    if (novoHobbie.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        hobbies: [...prev.hobbies, novoHobbie.trim()]
+      }));
+      setNovoHobbie("");
+    }
+  };
+
+  const handleRemoveHobbie = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      hobbies: prev.hobbies.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleEditHobbie = (index) => {
+    setEditingHobbie({ index, value: formData.hobbies[index] });
+  };
+
+  const handleSaveHobbie = () => {
+    if (editingHobbie.value.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        hobbies: prev.hobbies.map((hobbie, index) =>
+          index === editingHobbie.index ? editingHobbie.value.trim() : hobbie
+        )
+      }));
+      setEditingHobbie({ index: -1, value: "" });
+    }
+  };
+
+  const handleCancelEditHobbie = () => {
+    setEditingHobbie({ index: -1, value: "" });
   };
 
   // Cálculo da paginação
@@ -226,6 +265,52 @@ export function PlayersTable() {
     </div>
   );
 
+  const HobbiesList = ({ hobbies, onEdit, onRemove, editingHobbie, onSave, onCancel }) => (
+    <div className="mt-2 space-y-2 max-h-[200px] overflow-y-auto">
+      {hobbies.map((hobbie, index) => (
+        <div key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded">
+          {editingHobbie.index === index ? (
+            <div className="flex-1 flex gap-2">
+              <Input
+                value={editingHobbie.value}
+                onChange={(e) => setEditingHobbie(prev => ({ ...prev, value: e.target.value }))}
+                className="flex-1"
+              />
+              <Button type="button" size="sm" onClick={onSave}>
+                Salvar
+              </Button>
+              <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
+                Cancelar
+              </Button>
+            </div>
+          ) : (
+            <>
+              <span className="flex-1">{hobbie}</span>
+              <div className="space-x-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onEdit(index)}
+                >
+                  Editar
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onRemove(index)}
+                >
+                  Remover
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-4">
@@ -309,6 +394,27 @@ export function PlayersTable() {
                   editingConquista={editingConquista}
                   onSave={handleSaveConquista}
                   onCancel={handleCancelEdit}
+                />
+              </div>
+              <div>
+                <Label>Hobbies</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={novoHobbie}
+                    onChange={(e) => setNovoHobbie(e.target.value)}
+                    placeholder="Novo hobbie"
+                  />
+                  <Button type="button" onClick={handleAddHobbie}>
+                    Adicionar
+                  </Button>
+                </div>
+                <HobbiesList
+                  hobbies={formData.hobbies}
+                  onEdit={handleEditHobbie}
+                  onRemove={handleRemoveHobbie}
+                  editingHobbie={editingHobbie}
+                  onSave={handleSaveHobbie}
+                  onCancel={handleCancelEditHobbie}
                 />
               </div>
               <Button type="submit">Salvar</Button>
@@ -419,6 +525,27 @@ export function PlayersTable() {
                           editingConquista={editingConquista}
                           onSave={handleSaveConquista}
                           onCancel={handleCancelEdit}
+                        />
+                      </div>
+                      <div>
+                        <Label>Hobbies</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            value={novoHobbie}
+                            onChange={(e) => setNovoHobbie(e.target.value)}
+                            placeholder="Novo hobbie"
+                          />
+                          <Button type="button" onClick={handleAddHobbie}>
+                            Adicionar
+                          </Button>
+                        </div>
+                        <HobbiesList
+                          hobbies={formData.hobbies}
+                          onEdit={handleEditHobbie}
+                          onRemove={handleRemoveHobbie}
+                          editingHobbie={editingHobbie}
+                          onSave={handleSaveHobbie}
+                          onCancel={handleCancelEditHobbie}
                         />
                       </div>
                       <Button type="submit">Salvar Alterações</Button>
