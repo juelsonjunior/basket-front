@@ -21,7 +21,7 @@ export function DataPlayers({ player, userId, history }) {
 
     try {
       // Envia o jogador para a rota /save-history
-      await axios.post("http://localhost:3001/save-history", {
+      await axios.post("https://basket-api-info.up.railway.app/save-history", {
         players: [player],
         userId: resolvedUserId, // Usa o ID resolvido
       });

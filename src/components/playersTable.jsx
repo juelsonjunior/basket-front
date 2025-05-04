@@ -24,7 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 // Configuração base do Axios
 const api = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: "https://basket-api-info.up.railway.app",
 });
 
 export function PlayersTable() {
