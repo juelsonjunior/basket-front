@@ -15,6 +15,9 @@ export function Navbar() {
           <li>
             <Link href="/history">Histórico</Link>
           </li>
+          <li>
+            <Link href="/dashboard">Dashboard</Link>
+          </li>
         </ul>
       </nav>
     </>
