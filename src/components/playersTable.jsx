@@ -21,11 +21,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
-// Configuração base do Axios
-const api = axios.create({
-  baseURL: "https://basket-api-info.up.railway.app",
-});
+import { API_ROUTES } from "@/config/api";
+import { toast } from "sonner";
 
 export function PlayersTable() {
   const [players, setPlayers] = useState([]);
@@ -54,26 +51,92 @@ export function PlayersTable() {
 
   const fetchPlayers = async () => {
     try {
-      const response = await api.get("/players");
-      // Ordena os jogadores por ID (mais recente primeiro)
-      const sortedPlayers = response.data.sort((a, b) => {
-        return b._id.localeCompare(a._id);
-      });
-      setPlayers(sortedPlayers);
+      const response = await axios.get(API_ROUTES.players.list);
+      if (response.data.success) {
+        // Ordena os jogadores por data de criação em ordem decrescente
+        const sortedPlayers = [...response.data.data].sort((a, b) => {
+          const dateA = new Date(a.createdAt || a.updatedAt);
+          const dateB = new Date(b.createdAt || b.updatedAt);
+          return dateB - dateA;
+        });
+        setPlayers(sortedPlayers);
+      } else {
+        toast.error('Erro ao carregar jogadores');
+      }
     } catch (error) {
-      console.error("Erro ao buscar jogadores:", error);
+      console.error('Erro ao buscar jogadores:', error);
+      toast.error('Erro ao carregar jogadores');
+    }
+  };
+
+  const handleAddPlayer = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(API_ROUTES.players.create, formData);
+      if (response.data.success) {
+        toast.success('Jogador cadastrado com sucesso!');
+        // Adiciona o novo jogador no início da lista
+        setPlayers(prevPlayers => [response.data.data, ...prevPlayers]);
+        resetForm();
+      } else {
+        toast.error(response.data.error || 'Erro ao cadastrar jogador');
+      }
+    } catch (error) {
+      console.error('Erro ao cadastrar jogador:', error);
+      toast.error('Erro ao cadastrar jogador');
+    }
+  };
+
+  const handleUpdatePlayer = async () => {
+    if (!selectedPlayer) return;
+
+    try {
+      const response = await axios.put(
+        API_ROUTES.players.update(selectedPlayer._id),
+        formData
+      );
+      if (response.data.success) {
+        toast.success("Jogador atualizado com sucesso!");
+        setIsEditDialogOpen(false);
+        fetchPlayers();
+        resetForm();
+      } else {
+        toast.error(response.data.error || "Erro ao atualizar jogador");
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar jogador:", error);
+      toast.error(error.response?.data?.error || "Erro ao atualizar jogador");
     }
   };
 
   const handleDeletePlayer = async (id) => {
-    if (window.confirm("Tem certeza que deseja eliminar este jogador?")) {
-      try {
-        await api.delete(`/players/${id}`);
+    if (!confirm("Tem certeza que deseja excluir este jogador?")) return;
+
+    try {
+      const response = await axios.delete(API_ROUTES.players.delete(id));
+      if (response.data.success) {
+        toast.success("Jogador excluído com sucesso!");
         fetchPlayers();
-      } catch (error) {
-        console.error("Erro ao eliminar jogador:", error);
+      } else {
+        toast.error(response.data.error || "Erro ao excluir jogador");
       }
+    } catch (error) {
+      console.error("Erro ao excluir jogador:", error);
+      toast.error(error.response?.data?.error || "Erro ao excluir jogador");
     }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      nome: "",
+      idade: "",
+      localizacao: "",
+      equipe: "",
+      hobbies: [],
+      historia: "",
+      conquistas: [],
+    });
+    setSelectedPlayer(null);
   };
 
   const handleAddConquista = () => {
@@ -162,45 +225,6 @@ export function PlayersTable() {
       ...prev,
       [name]: value,
     }));
-  };
-
-  const handleAddPlayer = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await api.post("/players", formData);
-      if (response.status === 201) {
-        setIsAddDialogOpen(false);
-        setFormData({
-          nome: "",
-          idade: "",
-          localizacao: "",
-          equipe: "",
-          hobbies: [],
-          historia: "",
-          conquistas: [],
-        });
-        setNovaConquista("");
-        fetchPlayers();
-      }
-    } catch (error) {
-      console.error("Erro ao adicionar jogador:", error);
-    }
-  };
-
-  const handleEditPlayer = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await api.put(`/players/${selectedPlayer._id}`, formData);
-      if (response.status === 200) {
-        setIsEditDialogOpen(false);
-        setSelectedPlayer(null);
-        setNovaConquista("");
-        setEditingConquista({ index: -1, value: "" });
-        fetchPlayers();
-      }
-    } catch (error) {
-      console.error("Erro ao editar jogador:", error);
-    }
   };
 
   const openEditDialog = (player) => {
@@ -345,22 +369,6 @@ export function PlayersTable() {
     );
   };
 
-  const resetFormData = () => {
-    setFormData({
-      nome: "",
-      idade: "",
-      localizacao: "",
-      equipe: "",
-      hobbies: [],
-      historia: "",
-      conquistas: [],
-    });
-    setNovaConquista("");
-    setNovoHobbie("");
-    setEditingConquista({ index: -1, value: "" });
-    setEditingHobbie({ index: -1, value: "" });
-  };
-
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-4">
@@ -368,11 +376,11 @@ export function PlayersTable() {
         <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
           setIsAddDialogOpen(open);
           if (open) {
-            resetFormData();
+            resetForm();
           }
         }}>
           <DialogTrigger asChild>
-            <Button onClick={() => resetFormData()}>Adicionar Jogador</Button>
+            <Button onClick={() => resetForm()}>Adicionar Jogador</Button>
           </DialogTrigger>
           <DialogContent className="bg-white max-h-[90vh] overflow-y-auto">
             <DialogHeader>
@@ -509,7 +517,7 @@ export function PlayersTable() {
                     <DialogHeader>
                       <DialogTitle>Editar Jogador</DialogTitle>
                     </DialogHeader>
-                    <form onSubmit={handleEditPlayer} className="space-y-4">
+                    <form onSubmit={handleUpdatePlayer} className="space-y-4">
                       <div>
                         <Label htmlFor="edit-nome">Nome</Label>
                         <Input

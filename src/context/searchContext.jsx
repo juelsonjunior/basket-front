@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useMemo } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import { API_ROUTES } from "@/config/api";
 
 const SearchContext = createContext();
 
@@ -12,36 +13,29 @@ export function SearchProvider({ children }) {
   const searchPlayers = async (query) => {
     setLoading(true); // Inicia o carregamento
     try {
-      const response = await axios.post("https://basket-api-info.up.railway.app/search", {
+      const response = await axios.post(API_ROUTES.players.search, {
         q: query,
       });
 
-      if (response.status === 200) {
-        if (response.data.length === 0) {
+      if (response.data.success) {
+        if (response.data.data.length === 0) {
           // Caso nenhum jogador seja encontrado
           setResults([]); // Atualiza os resultados para um array vazio
           toast("Nenhum jogador encontrado."); // Exibe mensagem de aviso
         } else {
-          setResults(response.data); // Atualiza os resultados no contexto
+          setResults(response.data.data); // Atualiza os resultados no contexto
           toast.success("Jogadores encontrados com sucesso!"); // Exibe mensagem de sucesso
         }
+      } else {
+        setResults([]);
+        toast.error(response.data.error || "Erro ao buscar jogadores");
       }
     } catch (error) {
       setResults([]); // Garante que os resultados sejam limpos em caso de erro
-      if (error.response) {
-        if (error.response.status === 404) {
-          // Trata o erro 404 como "Nenhum jogador encontrado"
-          toast("Nenhum jogador encontrado.");
-        } else if (error.response.data && error.response.data.error) {
-          // Exibe a mensagem de erro retornada pela API
-          toast.error(error.response.data.error);
-        } else {
-          // Exibe uma mensagem genérica de erro
-          toast.error("Erro ao buscar jogadores.");
-        }
+      if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
       } else {
-        // Exibe uma mensagem genérica de erro para outros casos
-        toast.error("Erro na requisição: " + error.message);
+        toast.error("Erro ao buscar jogadores: " + error.message);
       }
     } finally {
       setLoading(false); // Finaliza o carregamento
@@ -52,8 +46,8 @@ export function SearchProvider({ children }) {
   const value = useMemo(
     () => ({
       results,
-      searchPlayers,
       loading,
+      searchPlayers,
     }),
     [results, loading]
   );
@@ -64,5 +58,9 @@ export function SearchProvider({ children }) {
 }
 
 export function useSearch() {
-  return useContext(SearchContext);
+  const context = useContext(SearchContext);
+  if (!context) {
+    throw new Error("useSearch deve ser usado dentro de um SearchProvider");
+  }
+  return context;
 }

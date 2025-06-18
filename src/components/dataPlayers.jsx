@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import axios from "axios";
 import { useState } from "react";
+import { API_ROUTES } from "@/config/api";
+import { toast } from "sonner";
 
 export function DataPlayers({ player, userId, history }) {
   // Determina o ID do usuário, priorizando o `userId` passado como prop
@@ -20,18 +22,31 @@ export function DataPlayers({ player, userId, history }) {
     }
 
     try {
-      // Envia o jogador para a rota /save-history
-      await axios.post("https://basket-api-info.up.railway.app/save-history", {
-        players: [player],
-        userId: resolvedUserId, // Usa o ID resolvido
+      // Prepara os dados do jogador no formato correto
+      const playerData = {
+        id: player._id || player.id, // Usa _id se disponível, senão usa id
+        nome: player.nome,
+        equipe: player.equipe,
+      };
+
+      const response = await axios.post(API_ROUTES.history.save, {
+        players: [playerData],
+        userId: resolvedUserId,
       });
+
+      if (response.data.success) {
+        toast.success("Jogador salvo no histórico com sucesso!");
+      } else {
+        toast.error(response.data.error || "Erro ao salvar no histórico");
+      }
     } catch (error) {
       console.error("Erro ao salvar no histórico:", error);
+      toast.error(error.response?.data?.error || "Erro ao salvar no histórico");
     }
   };
 
   const handleProfileClick = async () => {
-    await handleSaveHistory(); // Salva no histórico
+    await handleSaveHistory();
   };
 
   return (

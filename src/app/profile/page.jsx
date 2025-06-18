@@ -4,6 +4,7 @@ import { Calendar, MapPin, Star, Users } from "lucide-react";
 import { useEffect, useMemo, Suspense } from "react";
 import axios from "axios";
 import { useSearch } from "@/context/searchContext";
+import Image from "next/image";
 
 function ProfileContent() {
   const searchParams = useSearchParams();
@@ -38,7 +39,9 @@ function ProfileContent() {
           <div className="flex flex-col items-center md:items-start">
             {/* Foto de Perfil */}
             <div className="w-full flex items-center justify-center">
-              <div className="w-24 h-24 rounded-full bg-gray-300 mb-4"></div>
+              <div className="w-24 h-24 rounded-full bg-gray-300 mb-4">
+                <Image src="/user.png" alt={player.nome} width={96} height={96} />
+              </div>
             </div>
             {/* Informações do Usuário */}
             <div className="text-center md:text-left">

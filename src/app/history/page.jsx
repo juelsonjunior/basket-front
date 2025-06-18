@@ -7,105 +7,110 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { DataPlayers } from "@/components/dataPlayers";
+import { API_ROUTES } from "@/config/api";
 
 export default function HistoryPage() {
-  const [history, setHistory] = useState([]); // Estado para armazenar o histórico
-  const [loading, setLoading] = useState(true); // Estado para indicar carregamento
-  const [currentPage, setCurrentPage] = useState(1); // Página atual
-  const itemsPerPage = 5; // Número de registros por página
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  // Função para buscar o histórico, otimizada com useCallback
   const fetchHistory = useCallback(async () => {
-    setLoading(true); // Inicia o carregamento
+    setLoading(true);
     try {
-      const response = await axios.get("https://basket-api-info.up.railway.app/history");
-      if (response.status === 200) {
-        setHistory(response.data); // Atualiza o estado com os dados do histórico
+      const response = await axios.get(API_ROUTES.history.list);
+      if (response.data.success) {
+        setHistory(response.data.data);
       } else {
-        toast.error("Erro ao buscar o histórico."); // Exibe mensagem de erro genérica
+        toast.error(response.data.error || "Erro ao buscar o histórico");
       }
     } catch (error) {
-      if (error.response && error.response.data && error.response.data.error) {
-        // Exibe a mensagem de erro retornada pela API
-        toast.error(error.response.data.error);
-      } else {
-        // Exibe uma mensagem genérica de erro
-        toast.error("Erro na requisição: " + error.message);
-      }
+      console.error("Erro ao buscar histórico:", error);
+      toast.error(error.response?.data?.error || "Erro ao buscar o histórico");
     } finally {
-      setLoading(false); // Finaliza o carregamento
+      setLoading(false);
     }
   }, []);
 
-  // useEffect para buscar o histórico ao carregar o componente
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]);
 
-  // Calcula os dados da página atual
-  const currentData = useMemo(() => {
-    return history.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage
-    );
-  }, [history, currentPage, itemsPerPage]);
+  // Calcula o índice inicial e final para a paginação
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = history.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(history.length / itemsPerPage);
 
-  // Calcula o número total de páginas
-  const totalPages = useMemo(() => {
-    return Math.ceil(history.length / itemsPerPage);
-  }, [history, itemsPerPage]);
+  // Função para mudar de página
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col items-center justify-center gap-5 w-full">
-      <h1 className="text-2xl font-bold text-center text-white">
-        Histórico de Pesquisa
-      </h1>
-      <div className="flex flex-col gap-5 w-full">
-        {loading ? (
-          <div className="text-center text-white">Carregando histórico...</div>
-        ) : currentData.length > 0 ? (
-          currentData.map((player, index) => (
-            <DataPlayers key={index} player={player} userId={player.userId} />
-          ))
-        ) : (
-          <p className="text-white text-center">Nenhum histórico encontrado.</p>
-        )}
-      </div>
-      {/* Paginação */}
-      {history.length > itemsPerPage && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-white">Histórico de Pesquisas</h1>
+
+      {currentItems.length === 0 ? (
+        <div className="text-center text-white py-8">
+          Nenhum histórico encontrado.
+        </div>
+      ) : (
+        <>
+          <div className="space-y-4">
+            {currentItems.map((item, index) => (
+              <DataPlayers
+                key={index}
+                player={item}
+                userId={item.userId}
+                history={history}
               />
-            </PaginationItem>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  href="#"
-                  isActive={currentPage === index + 1}
-                  onClick={() => setCurrentPage(index + 1)}
-                >
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
             ))}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+          </div>
+
+          {totalPages > 1 && (
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+
+                {[...Array(totalPages)].map((_, index) => (
+                  <PaginationItem key={index + 1}>
+                    <PaginationLink
+                      onClick={() => handlePageChange(index + 1)}
+                      isActive={currentPage === index + 1}
+                    >
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </>
       )}
     </div>
   );
