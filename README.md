@@ -89,7 +89,7 @@ basket-front/
 
 - **Versão Atual**: 0.1.0
 - **Estado**: Em desenvolvimento
-- **Repositório**: Privado
+- **Repositório**: Público
 
 ## 🤝 Contribuindo
 
