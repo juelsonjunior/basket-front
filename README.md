@@ -27,7 +27,7 @@ O Basket é uma aplicação web completa que oferece uma interface moderna e int
 
 1. Clone o repositório
 ```bash
-git clone [URL_DO_REPOSITÓRIO]
+git clone [https://github.com/juelsonjunior/basket-front.git]
 ```
 
 2. Instale as dependências
@@ -108,5 +108,3 @@ Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes
 ## 📧 Contato
 
 [uelson Júnior] - [@juelsonjunior]
-
-Link do Projeto: [URL_DO_REPOSITÓRIO]
