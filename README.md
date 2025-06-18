@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🏀 Basket Front
 
-## Getting Started
+Uma aplicação frontend moderna e robusta para gerenciamento e consulta de dados de jogadores de basquete, desenvolvida com as mais recentes tecnologias do mercado.
 
-First, run the development server:
+## 📋 Sobre o Projeto
 
+O Basket é uma aplicação web completa que oferece uma interface moderna e intuitiva para consulta e gerenciamento de dados de jogadores de basquete. Desenvolvida com foco em performance, acessibilidade e experiência do usuário, esta aplicação permite pesquisar e visualizar informações detalhadas sobre jogadores, incluindo estatísticas, histórico, idade e outras informações relevantes.
+
+## 🚀 Tecnologias Utilizadas
+
+- **Next.js 15.3.1** - Framework React para desenvolvimento web
+- **React 19** - Biblioteca JavaScript para construção de interfaces
+- **TailwindCSS** - Framework CSS utilitário
+- **Radix UI** - Biblioteca de componentes acessíveis
+- **Axios** - Cliente HTTP para requisições
+- **Mongoose** - ODM para MongoDB
+- **Next Themes** - Gerenciamento de temas claro/escuro
+- **Sonner** - Biblioteca de notificações toast
+
+## 🛠️ Pré-requisitos
+
+- Node.js (versão 18 ou superior)
+- npm ou yarn
+- MongoDB (para conexão com o banco de dados)
+
+## 🔧 Instalação
+
+1. Clone o repositório
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone [URL_DO_REPOSITÓRIO]
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Instale as dependências
+```bash
+# Usando npm
+npm install
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+# Usando yarn
+yarn install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Executando o Projeto
 
-## Learn More
+```bash
+# Usando npm
+npm run dev
 
-To learn more about Next.js, take a look at the following resources:
+# Usando yarn
+yarn dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+A aplicação estará disponível em [http://localhost:3000](http://localhost:3000)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📦 Scripts Disponíveis
 
-## Deploy on Vercel
+- `npm run dev` - Inicia o servidor de desenvolvimento
+- `npm run build` - Cria a build de produção
+- `npm run start` - Inicia o servidor de produção
+- `npm run lint` - Executa a verificação de linting
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🏗️ Estrutura do Projeto
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+basket-front/
+├── src/                    # Código fonte principal
+│   ├── app/               # Rotas e páginas da aplicação
+│   ├── components/        # Componentes React reutilizáveis
+│   ├── lib/              # Utilitários e configurações
+│   └── styles/           # Estilos globais
+├── public/                # Arquivos estáticos
+└── ...
+```
+
+## 🎨 UI/UX
+
+### Componentes e Estilização
+- TailwindCSS para estilização responsiva
+- Radix UI para componentes acessíveis
+- Animações suaves com tw-animate-css
+
+### Funcionalidades Principais
+- Pesquisa avançada de jogadores
+- Visualização detalhada de perfis
+- Histórico e estatísticas dos jogadores
+- Interface responsiva
+- Notificações toast
+
+## 📊 Status do Projeto
+
+- **Versão Atual**: 0.1.0
+- **Estado**: Em desenvolvimento
+- **Repositório**: Privado
+
+## 🤝 Contribuindo
+
+Para contribuir com o projeto:
+
+1. Faça um Fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📝 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+
+## 📧 Contato
+
+[uelson Júnior] - [@juelsonjunior]
+
+Link do Projeto: [URL_DO_REPOSITÓRIO]
