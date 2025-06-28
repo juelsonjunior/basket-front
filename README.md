@@ -88,7 +88,6 @@ basket-front/
 ## 📊 Status do Projeto
 
 - **Versão Atual**: 0.1.0
-- **Estado**: Em desenvolvimento
 - **Repositório**: Público
 
 ## 🤝 Contribuindo
@@ -100,11 +99,3 @@ Para contribuir com o projeto:
 3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
-
-## 📝 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
-
-## 📧 Contato
-
-[uelson Júnior] - [@juelsonjunior]
